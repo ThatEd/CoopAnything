@@ -8721,7 +8721,9 @@
     (bSubstepping=False, MaxPhysicsDeltaTime=0.033333), so two machines are never at the same step and per-field
     overwriting cannot converge - 1.88M writes were applied while the distance delta grew to 62 km. Work has
     moved to time-gap-scaled correction against SIM_TIME (race_time is max(lap_time) and freezes, so it is not a
-    clock). Not yet synchronised: car positions, car damage, pit stops and the race-start hold. Also built: a
+    clock). Car positions do synchronise while the two clocks are in step - measured maxDistDelta=0.00 in
+    three live sessions, all 22 cars tracked - then diverge as they drift, which is the central unsolved
+    problem. Not synchronised at all: car damage, pit stops, race control and the race-start hold. Also built: a
     Gameface main-menu entry and lobby screen with per-player team claims (verified against the game''s render tree
     only, not yet on screen), and the write rules for three modes - shared team (each player owns their LoadoutID,
     facilities and research from the host), versus, and co-op career - written and tested but not yet called by

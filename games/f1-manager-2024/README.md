@@ -10,10 +10,11 @@
 
 ## Where things stand
 
-Not playable. Four live race sessions were attempted and none held synchronisation. The wiring is in
-place and measurable — the agent injects, its game-thread hook fires 25–60 times a second, and car
-fields are read and written — but the two simulations diverge and there is no shared clock to correct
-against. Everything below is measured from the game, not inferred.
+Partly working, not playable. Car positions **do** synchronise and were measured at
+`maxDistDelta=0.00` in three separate live sessions, with all 22 cars tracked and the lap order correct
+— then the two simulations come apart as the clocks drift, once by 62 km while 1.88 M writes were being
+applied. Nothing else is synced: not damage, not pit stops, not race control. Four live race sessions
+were attempted and none held sync to the flag. Everything below is measured from the game, not inferred.
 
 ## Existing work
 
@@ -148,7 +149,8 @@ one-click host and join.
 
 ## Known issues
 
-- No sustained location sync. Cars diverge while the race runs.
+- Sync does not survive a race. Positions agree while the clocks are in step (measured
+  `maxDistDelta=0.00`), then diverge as they drift.
 - The race start is not held for both players on all counts; restarting a red-flagged session has left
   cars leaving the pits while one side was not ready.
 - Car damage is not synchronised.
