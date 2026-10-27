@@ -3035,13 +3035,27 @@ Each of those is one launch away from being known, and each is a guess until the
 
 ## Repository (2026-10-27)
 
-This work now lives in its own git repository, forked from
-`cranebeaker/coop-anything`, branch `game/f1-manager-2024`. It was previously loose files in
-`local/f1-manager-2024/`, which is gitignored, so nothing had version history.
+This work now lives in its own git repository, forked from `cranebeaker/coop-anything`, at
+https://github.com/ThatEd/F1Manager2024. It was previously loose files in `local/f1-manager-2024/`,
+which is gitignored, so nothing had version history.
 
-The fork is a full clone with the F1M work committed on top, rather than a fresh repo, so pull
-requests to upstream contain only this game's diff. `origin` and `upstream` both point at
-`cranebeaker/coop-anything`; `origin` should become a personal fork before pushing.
+The fork is a full clone with the F1M work committed on top of upstream `main`, rather than a fresh
+repo, so pull requests to upstream contain only this game's diff.
+
+`origin` is the personal fork; `upstream` is `cranebeaker/coop-anything`. **The fork's default branch is
+`main`, and `main` carries the F1M work** — it was fast-forwarded from upstream at commit `c0dedea`. So
+the repo root shows this project, and a feature branch would be branched from `main` as normal.
+
+Because `main` is no longer identical to upstream, keep the two straight when syncing:
+
+```sh
+git fetch upstream
+git merge upstream/main        # bring in new hub content; F1M commits stay on top
+git push origin main           # publish
+```
+
+Never force-push `main`. If the histories ever diverge, the work is the five commits listed below
+rather than a squashed tree, so it can be rebased onto upstream cleanly.
 
 ### What was excluded, and why
 
