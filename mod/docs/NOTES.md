@@ -1,4 +1,4 @@
-# F1 Manager 2024 — Co-op Anything notes
+# F1 Manager 2024 â€” Co-op Anything notes
 
 ## Game identity (recorded 2026-10-26)
 - Install: `<game dir>`
@@ -14,32 +14,32 @@
 - No existing entry in `data/directory.yaml`
 - No existing write-up in `games/`
 
-## Phase 1: Research — complete (2026-10-26)
+## Phase 1: Research â€” complete (2026-10-26)
 Searched: this repo, GitHub repos+code, Nexus Mods (403 blocked), ModDB (404), Steam discussions, Reddit r/F1Manager, web search.
 Result: No co-op project exists for F1 Manager 2024.
 Added gap entry to data/directory.yaml (kind: gap, status: none, qa: none).
 Rebuilt DIRECTORY.md (313 entries).
 
 Existing UE4/5 co-op references on same engine:
-- Lies of P Co-op (Ember Wave) — playable, steam-relay, 2 players
-- Hogwarts Legacy Wandrealm — playable, dedicated-server, up to 512
-- CrabSync (Crab Champions) — playable, shared inventory
-- Half Sword Multiplayer Mod — prototype, steam-relay, up to 6
+- Lies of P Co-op (Ember Wave) â€” playable, steam-relay, 2 players
+- Hogwarts Legacy Wandrealm â€” playable, dedicated-server, up to 512
+- CrabSync (Crab Champions) â€” playable, shared inventory
+- Half Sword Multiplayer Mod â€” prototype, steam-relay, up to 6
 
-Active F1M24 modding scene: DatabaseEditor (save editor, v3.6.2), F1Manager2024Logger (telemetry), trainers, setup tools — no multiplayer work.
+Active F1M24 modding scene: DatabaseEditor (save editor, v3.6.2), F1Manager2024Logger (telemetry), trainers, setup tools â€” no multiplayer work.
 
-## Phase 2: Workspace — complete (2026-10-26)
+## Phase 2: Workspace â€” complete (2026-10-26)
 Test install copied to `local/f1-manager-2024/test-install` (isolated from owner's install).
 - UE4SS v3.0.1 already installed with 10 mods including SplitScreenMod and ConsoleEnablerMod
 - Engine: UE 5.1 (from UE4SS-settings.ini EngineVersionOverride)
 - Save location: `%LOCALAPPDATA%\F1Manager24\Saved\` (SaveGames, SaveGames2, SaveGames4, SaveGamesS)
-- Instance-local config created in test-install\F1Manager24\Saved\Config\Windows\ (Engine.ini, GameUserSettings.ini, Input.ini) — windowed 1280x720, VSync off
+- Instance-local config created in test-install\F1Manager24\Saved\Config\Windows\ (Engine.ini, GameUserSettings.ini, Input.ini) â€” windowed 1280x720, VSync off
 - No anti-cheat detected
 
-## Phase 3: Understand — COMPLETE (2026-10-26)
+## Phase 3: Understand â€” COMPLETE (2026-10-26)
 
 ### CRITICAL REALIZATION: Cannot isolate Steam game
-- Steam games CANNOT be launched from an isolated copy — Steam always relaunches from owner's install
+- Steam games CANNOT be launched from an isolated copy â€” Steam always relaunches from owner's install
 - UE4SS cannot be tested in test-install because the exe triggers Steam to use owner's install
 - All live execution tracing must happen in the OWNER's install (<game dir>)
 - UE4SS is NOT installed in owner's install (no ue4ss.dll there)
@@ -48,35 +48,35 @@ Test install copied to `local/f1-manager-2024/test-install` (isolated from owner
 The save is GVAS wrapping zlib-compressed SQLite. Disassembled CSVs at `E:\Downloads\ThatFinnishGuy Save Viewer\Save data disassembled\`:
 
 **Race weekend tables (written after each session completes):**
-- `Races` — RaceID, SeasonID, Day, TrackID, State(0=Pending,1=InProgress,2=Complete), weather, weekend type
-- `Races_PracticeResults` — SeasonID, RaceID, PracticeSession, DriverID, TeamID, TimeOnTrack, SessionDuration, BestLapTime, BestLapTyre, LapCount
-- `Races_QualifyingResults` — SeasonID, RaceID, QualifyingStage, SprintShootout, FinishingPos, DriverID, TeamID, FastestLap, DNF, LapCount
-- `Races_SprintResults` — SeasonID, RaceID, FinishingPos, DriverID, TeamID
-- `Races_Results` — Season, RaceID, FinishingPos, DriverID, TeamID, Laps, Time, FastestLap, Points, DNF, overtakes, etc.
-- `Races_PitStopTimings` — SeasonID, RaceID, TeamID, DriverID, PitStopID, PitStopStage, Duration, IncidentDelay, Lap
-- `Races_PitStopResults` — SeasonID, RaceID, TeamID, FinishPosition, FastestPitStopTime, DriverID, Points
-- `Races_DriverStandings` / `Races_TeamStandings` — SeasonID, ID, Points, Position
-- `Races_Tracks` — TrackID, Name, Laps, TrackLength, SafetyCarChance, etc.
-- `Save_RaceSimManager` — CarIndex, Active, Fuel, EngineTemperature, BrakeTemperature, RacePosition, TotalRaceTime, LapCount, DRSState, etc.
-- `Save_RaceSimCars` — CarIndex, PitStopState, PitStopStartTime, various pit stop stage times
-- `Save_RaceSimCars_Overtake` — CarIndex, OvertakeActive, DefenderCar, AttackerInitialLine, etc.
+- `Races` â€” RaceID, SeasonID, Day, TrackID, State(0=Pending,1=InProgress,2=Complete), weather, weekend type
+- `Races_PracticeResults` â€” SeasonID, RaceID, PracticeSession, DriverID, TeamID, TimeOnTrack, SessionDuration, BestLapTime, BestLapTyre, LapCount
+- `Races_QualifyingResults` â€” SeasonID, RaceID, QualifyingStage, SprintShootout, FinishingPos, DriverID, TeamID, FastestLap, DNF, LapCount
+- `Races_SprintResults` â€” SeasonID, RaceID, FinishingPos, DriverID, TeamID
+- `Races_Results` â€” Season, RaceID, FinishingPos, DriverID, TeamID, Laps, Time, FastestLap, Points, DNF, overtakes, etc.
+- `Races_PitStopTimings` â€” SeasonID, RaceID, TeamID, DriverID, PitStopID, PitStopStage, Duration, IncidentDelay, Lap
+- `Races_PitStopResults` â€” SeasonID, RaceID, TeamID, FinishPosition, FastestPitStopTime, DriverID, Points
+- `Races_DriverStandings` / `Races_TeamStandings` â€” SeasonID, ID, Points, Position
+- `Races_Tracks` â€” TrackID, Name, Laps, TrackLength, SafetyCarChance, etc.
+- `Save_RaceSimManager` â€” CarIndex, Active, Fuel, EngineTemperature, BrakeTemperature, RacePosition, TotalRaceTime, LapCount, DRSState, etc.
+- `Save_RaceSimCars` â€” CarIndex, PitStopState, PitStopStartTime, various pit stop stage times
+- `Save_RaceSimCars_Overtake` â€” CarIndex, OvertakeActive, DefenderCar, AttackerInitialLine, etc.
 
 **Management tables (between sessions):**
-- `Staff_DriverData` — driver stats, contracts, marketability
-- `Staff_Contracts` — driver contracts, salary, end season
-- `Finance_TeamBalance` / `Finance_Transactions` — team money
-- `Parts_Designs` / `Parts_Projects` / `Parts_Items` — car part development
-- `Teams` — team info, colors, location
-- `Player` / `Player_History` / `Player_Record` — player career data
+- `Staff_DriverData` â€” driver stats, contracts, marketability
+- `Staff_Contracts` â€” driver contracts, salary, end season
+- `Finance_TeamBalance` / `Finance_Transactions` â€” team money
+- `Parts_Designs` / `Parts_Projects` / `Parts_Items` â€” car part development
+- `Teams` â€” team info, colors, location
+- `Player` / `Player_History` / `Player_Record` â€” player career data
 
 **Race weekend flow (from save data):**
-Practice (1-3 sessions) → Qualifying → (optional Sprint) → Race → Post-race standings update
+Practice (1-3 sessions) â†’ Qualifying â†’ (optional Sprint) â†’ Race â†’ Post-race standings update
 Each session writes its results to the corresponding table when complete.
 
 **CRITICAL LIMITATION**: Static dumps tell us WHAT data exists but NOT when each table is written during live gameplay.
 
-### What we NEED to understand (live execution — must be done in owner's install)
-1. **Race weekend flow**: What UFunctions fire when practice → quali → race → post-race?
+### What we NEED to understand (live execution â€” must be done in owner's install)
+1. **Race weekend flow**: What UFunctions fire when practice â†’ quali â†’ race â†’ post-race?
 2. **Live data generation**: Is race sim data computed live or pre-baked?
 3. **Save timing**: When exactly does the game write saves between sessions?
 4. **Netcode**: Any client/server architecture, or purely single-player?
@@ -85,28 +85,28 @@ Each session writes its results to the corresponding table when complete.
 ### UE4SS status
 - UE4SS v3.0.1 installed in test-install (dwmapi.dll + UE4SS.dll) but CANNOT be tested there
 - CoopDiagMod created but cannot run without UE4SS in owner's install
-- Owner's install has NO UE4SS — would need to install it there (touches owner's install)
+- Owner's install has NO UE4SS â€” would need to install it there (touches owner's install)
 
 ### Co-op architecture assessment
-- **No netcode exists** — single-player management sim
+- **No netcode exists** â€” single-player management sim
 - **UE4SS Lua hooks available** IF installed in owner's install
-- **Save sync between sessions** — patch saves at race weekend boundaries (weak co-op)
-- **Race session sync** — main technical challenge; need to sync race sim state between players
+- **Save sync between sessions** â€” patch saves at race weekend boundaries (weak co-op)
+- **Race session sync** â€” main technical challenge; need to sync race sim state between players
 - **Approach**: UE4SS mod that hooks race start/end, patches saves between sessions, syncs race results via network
 
 ### Next step
-Phase 4: Choose — design co-op architecture and networking model. Live UE4SS tracing requires installing UE4SS in owner's install (needs owner permission).
+Phase 4: Choose â€” design co-op architecture and networking model. Live UE4SS tracing requires installing UE4SS in owner's install (needs owner permission).
 
-## CORRECTIONS — 2026-10-26 (supersedes the wrong claims in the Phase 3 section above)
+## CORRECTIONS â€” 2026-10-26 (supersedes the wrong claims in the Phase 3 section above)
 
 ### Retracted claims
-1. "Correct UFunction names unknown" — FALSE. They are in the FModel Blueprint JSON `FuncMap`:
+1. "Correct UFunction names unknown" â€” FALSE. They are in the FModel Blueprint JSON `FuncMap`:
    - `/Game/RaceSim/BP_RaceSimNotificationsManager.BP_RaceSimNotificationsManager_C:RaceSimEventReceived` (param `i_event`, a `RaceSimEvent`)
    - `/Game/RaceSim/RaceSimChroma.RaceSimChroma_C:RaceSimEventRecieved` (sic, "Recieved"), plus PlayRedFlagAnims / PlayYellowFlagAnims / PlayCqFlagAnims / PlaySwooshAnims / OnSwooshStart / OnSwooshStop
    - `/Game/RaceSim/FullScreenMap/CarIconWidget.CarIconWidget_C:` SetWidgetData / OnRacePosChanged / OnSetCarWidgetData / OnSelectedChanged / OnMinimalChanged / PreConstruct
-2. "RaceSimDataAsset holds Races_Results, Staff_DriverData, Finance_TeamBalance, Parts_Designs, Player_History" — FALSE. RaceSimDataAsset.json contains only sim tuning (tyre wear thresholds, driver accuracy, lift-and-coast, etc.). Those table names came from the save file's SQLite DB. Two sources were conflated.
-3. "All RegisterHook guesses failed" — wrong conclusion. The 4 failures in the 02:40:35 run were hooks registered at mod-load time, before the race Blueprint classes existed. The session then ran until 03:04 without crashing.
-4. "Use native hooks, never RegisterHook" — contradicted by the evidence. RegisterHook works; the timing was wrong.
+2. "RaceSimDataAsset holds Races_Results, Staff_DriverData, Finance_TeamBalance, Parts_Designs, Player_History" â€” FALSE. RaceSimDataAsset.json contains only sim tuning (tyre wear thresholds, driver accuracy, lift-and-coast, etc.). Those table names came from the save file's SQLite DB. Two sources were conflated.
+3. "All RegisterHook guesses failed" â€” wrong conclusion. The 4 failures in the 02:40:35 run were hooks registered at mod-load time, before the race Blueprint classes existed. The session then ran until 03:04 without crashing.
+4. "Use native hooks, never RegisterHook" â€” contradicted by the evidence. RegisterHook works; the timing was wrong.
 
 ### Verified working (v14 log)
 - `RaceSimEventReceived` hooked and FIRED 100+ times during a race; first firing 03:18:22, 100th at 03:19:43.
@@ -125,11 +125,11 @@ Phase 4: Choose — design co-op architecture and networking model. Live UE4SS t
 - v16 source kept at `local/f1-manager-2024/CoopDiagMod_v16.lua`, copied into the game folder.
 
 ### Still unverified
-- Memory offsets from the PitWallAI/FormationLap notes (0x9A, 0x88, 0x99AF1C, CAR_BASE 0x95BC00, stride 0x10D8) — v16 deliberately does NOT read/write memory; it only reports property offsets via the reflected API so they can be compared.
+- Memory offsets from the PitWallAI/FormationLap notes (0x9A, 0x88, 0x99AF1C, CAR_BASE 0x95BC00, stride 0x10D8) â€” v16 deliberately does NOT read/write memory; it only reports property offsets via the reflected API so they can be compared.
 - Save timing and save format claims.
 - Whether the offsets match this build.
 
-## CoopDiagMod version history — lessons (2026-10-26)
+## CoopDiagMod version history â€” lessons (2026-10-26)
 
 | Version | Outcome | Defect |
 |---|---|---|
@@ -143,15 +143,15 @@ Phase 4: Choose — design co-op architecture and networking model. Live UE4SS t
 
 ### Rules that came out of this
 1. Never register hooks only at mod load. Race Blueprint classes are not loaded yet.
-2. Keep object-creation triggers (GameModeBase / PlayerController) — they are what actually worked.
+2. Keep object-creation triggers (GameModeBase / PlayerController) â€” they are what actually worked.
 3. Do not let a retry depend on the hook it is trying to register.
 4. Retry more than once: CarIconWidget_C was absent at 03:18:07 and present at 03:18:33.
-5. Hook callbacks are (self, ...) — never named params after self.
+5. Hook callbacks are (self, ...) â€” never named params after self.
 6. tostring(nil) is the string "nil"; check for nil before formatting.
 7. print() in UE4SS adds no newline.
 8. Offsets from a third-party write-up are unverified for this build; only trust values read back through the reflected API.
 
-## v16.1 race test with red-flag restart — 2026-10-26 04:02:39-04:06:39 (log verified)
+## v16.1 race test with red-flag restart â€” 2026-10-26 04:02:39-04:06:39 (log verified)
 
 ### What the run shows
 - 1200 RaceSimEvent events, 67 distinct m_type values, fully accounted (sum = 1200).
@@ -185,7 +185,7 @@ This is the first independent confirmation of FormationLap's event-ID table agai
 | Time scale live | Not called yet. RaceSimManager:GetPlaybackRate exists. |
 | Team commands game->client | Not started. |
 
-## CoopDiagMod v17 — read-only call-convention probe (deployed 2026-10-26)
+## CoopDiagMod v17 â€” read-only call-convention probe (deployed 2026-10-26)
 
 v16.1 is preserved at `local/f1-manager-2024/CoopDiagMod_v16.1_backup.lua` (15465 bytes,
 sha256 DC151D22...). v17 source lives in `local/` and is deployed to the owner install.
@@ -197,11 +197,11 @@ native UFunction from UE4SS Lua on this build", which we do not know. So v17 pro
 read-only, while keeping the proven event capture running.
 
 ### Offline check toolchain (no Lua interpreter exists on this machine)
-- `luasyntax.py` — real Lua grammar via the already-installed tree_sitter_lua package.
+- `luasyntax.py` â€” real Lua grammar via the already-installed tree_sitter_lua package.
   Validated: v16.1 and v17 parse with zero ERROR nodes; a deliberately broken file is rejected.
-- `luaglobals.py` — names used but never declared. Validated: catches `discovered` (the v12
+- `luaglobals.py` â€” names used but never declared. Validated: catches `discovered` (the v12
   crash) and undefined calls; v16.1 and v17 both report clean.
-- `luacheck_structural.py` — block/vararg balance, string.format arg counts,
+- `luacheck_structural.py` â€” block/vararg balance, string.format arg counts,
   local-function use-before-definition, and that every string we grep the log for is printed.
 Result: v17 PASS on all three.
 What these cannot catch: wrong UE4SS API signatures, and runtime errors from a valid-looking
@@ -2279,7 +2279,7 @@ the calling convention - the target address was simply not encodable in the byte
 both consistent with executing garbage in unmapped memory.
 
 Fixed by `alloc_near()`: walk outward from the target in allocation-granularity strides asking for
-specific addresses, and verify each grant is inside ±2 GB before using it. Verified on the real
+specific addresses, and verify each grant is inside Â±2 GB before using it. Verified on the real
 allocator in a unit test:
 
 ```
@@ -2562,7 +2562,7 @@ write.
 - `Msg::Rc` is sent and applied, but **not yet tested in a live red flag** - the share went down before
   redeploying to the client.
 - Tyres are a `FIELDS` change, not yet done.
-- Damage needs the event bus (`ERaceSimEventType`), the bigger job, per RACESIM-HIJACK §5.2.
+- Damage needs the event bus (`ERaceSimEventType`), the bigger job, per RACESIM-HIJACK Â§5.2.
 - The publisher's `read_cars` (one 10.5 MB read) has been seen to fail with `ERROR_PARTIAL_COPY`
   mid-session. `read_rc` reads its 6 bytes individually for that reason; `read_cars` still needs the
   same treatment or an intermittent loss of snapshots.
@@ -2696,7 +2696,7 @@ Three beliefs the project held were wrong, and the export corrects them:
 
 | believed | actually |
 |---|---|
-| damage needs the event bus (RACESIM-HIJACK §5.2) | `Save_RaceSimCars_Parts` has **six named damage levels**: Body, FrontWing, RearWing, SidePods, Floor, Suspension |
+| damage needs the event bus (RACESIM-HIJACK Â§5.2) | `Save_RaceSimCars_Parts` has **six named damage levels**: Body, FrontWing, RearWing, SidePods, Floor, Suspension |
 | the sim has no clock to anchor on | `Save_RaceSimManager.SimTime` is persisted - time is the game's own anchor |
 | `race_pos` is derived and must not travel | `Save_RaceSimCars.RacePosition` is persisted, so it is state |
 
@@ -2714,7 +2714,7 @@ MaxSubstepDeltaTime=0.016667
 ```
 
 **No fixed timestep.** Each machine integrates a variable wall-clock delta, so two sims are never at the
-same step. Combined with the frozen `race_time` (§ below), that is why 1.88 M field writes in one session
+same step. Combined with the frozen `race_time` (Â§ below), that is why 1.88 M field writes in one session
 still left the client 62 km off: the writes landed and the sim integrated past them.
 
 Measured live during the race:
@@ -3030,3 +3030,44 @@ tests                        52 agent + 13 auth + 16 link + proto, all passing
 - whether `window.Engine.sendEvent('NewGame')` is the right event name for a new career.
 
 Each of those is one launch away from being known, and each is a guess until then.
+
+---
+
+## Repository (2026-10-27)
+
+This work now lives in its own git repository, forked from
+`cranebeaker/coop-anything`, branch `game/f1-manager-2024`. It was previously loose files in
+`local/f1-manager-2024/`, which is gitignored, so nothing had version history.
+
+The fork is a full clone with the F1M work committed on top, rather than a fresh repo, so pull
+requests to upstream contain only this game's diff. `origin` and `upstream` both point at
+`cranebeaker/coop-anything`; `origin` should become a personal fork before pushing.
+
+### What was excluded, and why
+
+| excluded | reason |
+|---|---|
+| `test-install/` (19 GB) | copy of the game; purchased content |
+| `coop-rs/target/`, the packed `.pak` | build output. Committing the pak is exactly how a stale one shipped |
+| `F1Manager 2024 Cheat Table.rar`, `cheattable/` | third-party, not our work |
+| `ue4ss-src/`, `UE4SS_extract/`, `UE4SS.dll`, `dwmapi.dll` | third-party binaries with their own licences |
+| `region_*.bin`, snapshots, `.sav` | dumps of the game's memory and saves |
+| `tools/repak.exe` | third-party build tool |
+| `client-package/*.exe`, `*.dll` | build output; `deploy_pak.py` and the README explain how to obtain them |
+
+### Machine-specific values removed
+
+Committing one machine's paths and addresses makes the repo wrong for everyone else, and an IP points
+at a stranger's PC. All of these were replaced before the first commit:
+
+- `\\<other-pc>\e` -> `COOP_REMOTE_SHARE` / `<share root>`
+- `E:\Steam\...` -> `COOP_HOST_GAME` / `<game dir>`
+- `C:\Users\<user>\AppData\...` -> `%LOCALAPPDATA%`
+- `E:\FModel\Output\Exports\F1Manager24` -> `<export dir>`
+- `192.168.1.101` / `192.168.1.100` -> `<host-ip>` / `<client-ip>`, with `HOST_ADDR` and
+  `localStorage["coop.host"]` carrying the real value at runtime
+- `E:\TEMP\coop-target` -> `target`, so the pinned build directory works anywhere
+
+`tools/preflight.py`, `tools/deploy_pak.py`, `tools/remote.py`, `client/.../attach-client.ps1` and
+`pak/.../bridge.js` were all changed to read these from the environment or from storage. A scan of
+every committed text file for the old values returns zero hits.
