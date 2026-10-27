@@ -1,209 +1,256 @@
-<h1 align="center">Co-op Anything</h1>
+<div align="center">
 
-<p align="center"><b>Any single-player game. Your friends. Your agent does the work.</b></p>
+# F1 Manager 2024 — Co-op
 
-<p align="center">
-<a href="https://ko-fi.com/cranebeaker"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support me on Ko-fi"></a>
-<a href="https://discord.gg/EXGB49R82t"><img src="https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?logo=discord&logoColor=white&style=for-the-badge" alt="Join the Discord" height="36"></a>
-<a href="https://coopanything.app"><img src="https://img.shields.io/badge/CoOp%3AAnything-Browse%20every%20co--op%20mod-1abc9c?style=for-the-badge" alt="Browse every co-op mod on CoOp:Anything" height="36"></a>
-</p>
+**Two players, one career.** A co-op mod for F1 Manager 2024, built from the outside because the game
+has no multiplayer at all.
 
-<p align="center">
-<a href="#quick-start">Quick start</a> ·
-<a href="#how-it-works">How it works</a> ·
-<a href="#what-you-can-co-op">What you can co-op</a> ·
-<a href="#games-so-far">Games so far</a> ·
-<a href="#everyone-is-a-contributor">Contribute</a> ·
-<a href="#faq">FAQ</a> ·
-<a href="#documentation">Docs</a>
-</p>
+![status](https://img.shields.io/badge/status-prototype-orange)
+![version](https://img.shields.io/badge/game-1.11.0.39891%20(Steam%202591280)-blue)
+![engine](https://img.shields.io/badge/engine-UE%205.1-lightgrey)
+![tests](https://img.shields.io/badge/tests-99%20passing-brightgreen)
+![sync](https://img.shields.io/badge/race%20sync-not%20yet-red)
 
-Want to play a single-player game with your friends? Point your AI coding agent at this
-repo. It researches what exists, reverse engineers the game and its engine if it has to,
-builds or fixes the co-op, **tests it with bots inside the game**, and packages it so your
-friends install it in one click and join over Steam without port forwarding.
+[What](#what) · [Goal](#goal) · [How](#how) · [Progress](#progress) · [Build](#build) · [Plan](#plan) · [Problems](#problems-worth-reading)
 
-The sky is the limit. Every game that runs on your PC is a candidate.
+</div>
 
-Games being made co-op right now: **[Deus Ex](https://github.com/cranebeaker/deus-ex-coop)** (released) ·
-**[Fallout: New Vegas](https://github.com/cranebeaker/fnv-coop)** · **[Zelda: Ocarina of Time](https://github.com/cranebeaker/ocarina-coop)** (fully synced) ·
-**[Dungeon Keeper](https://github.com/cranebeaker/dungeon-keeper-coop)** · **[S.T.A.L.K.E.R. Shadow of Chernobyl](https://github.com/cranebeaker/stalker-soc-coop-fixes)**
+> [!IMPORTANT]
+> **Not playable yet.** Race synchronisation does not hold. Everything below is honest about that,
+> including the parts that work and the parts that only look like they work. If you are here to play,
+> come back later; if you are here to help, [Problems](#problems-worth-reading) is the fastest way in.
 
-From the community: **[Mega Man X](https://github.com/mstan/MegaManXSNESRecomp)** and
-**[Mega Man X4](https://github.com/mstan/MegaManX4Recomp)** (native PC with co-op netplay) ·
-**[Pilotwings 64](https://github.com/NoahVl/Birdman64)** (split-screen) ·
-**[Crab Champions](https://github.com/Dudiebug/CrabMods/blob/main/crabsync/README.md)** · **[Stacklands](https://github.com/Dudiebug/stacklands-coop)** ·
-**[Half Sword](https://github.com/Dudiebug/halfsword-multiplayer-mod)** · **[Enter the Gungeon](https://thunderstore.io/c/enter-the-gungeon/p/GoTeamAlex/Gungeon_Online/)** ·
-**[Clive Barker's Jericho](https://github.com/dolbaras/jericho-coop)** · **[Poppy Playtime](https://github.com/romannazarov057-spec/PoppyCoop)** ·
-**[Divinity II](games/divinity-2-developers-cut)** (split-screen) · **[Command & Conquer 3](games/command-and-conquer-3)** (campaign co-op) ·
-**[Far Cry 2](https://github.com/MortyRei/fc2-coop-probe)** · **[Gothic 3](https://github.com/GGM1k3y23/g3-together)** · **[Fear & Hunger](https://github.com/glynn568-glitch/fear-and-hunger-together)** ·
-**[Modern Warfare 2](https://github.com/stxlvn/mw2_coop)** (campaign co-op) · **[Little Nightmares](https://discord.com/channels/1561411702082510879/1562210529504927836)** (on our Discord) · yours next?
+---
 
-## Quick start
+## What
 
-Tell your agent (Claude Code, Codex, Gemini CLI, Cursor, OpenCode, ...):
+F1 Manager 2024 is a single-player Formula 1 management sim: contracts, car development, facilities,
+race strategy, and a race simulation of 22 cars. Two people cannot play it together. This project makes
+that possible.
 
-```
-Read https://github.com/cranebeaker/coop-anything and follow AGENTS.md.
-I want to play <game> in co-op with my friends.
-```
+There is no co-op mod to build on. There is no netcode in the game to lean on — no multiplayer, no
+lobbies, no session layer. F1 Manager 2024 is a single-player game with a heavily simulated match, so
+everything has to be built from the outside: read the game's state, decide what one machine owns, and
+make the other machine agree.
 
-The agent follows [AGENTS.md](AGENTS.md) and the skills in [`.agents/skills`](.agents/skills)
-(also in `.claude/skills` for Claude Code).
+**Scope is the whole game, not just the race.** A co-op career that only syncs races is not a co-op
+career. Contracts, transfers, car development, research, facilities, finances and the calendar all
+have to work too.
 
-### Add the MCP server
+### Three modes
 
-The **Co-op Anything MCP** lets any agent search the co-op directory, detect a game's engine
-from its install folder, read the playbook and skills, and validate contributions.
-Claude Code picks it up from this repo's `.mcp.json`; for other agents:
-
-```
-claude mcp add coop-anything -- python <clone>/tools/mcp/coop_mcp.py
-```
-
-Codex, Gemini CLI and Cursor setup: [playbook/mcp.md](playbook/mcp.md). For the binary work,
-pair it with a reverse-engineering MCP such as [REA](https://github.com/morluto/rea)
-(`npx rea-agents setup`): Co-op Anything knows what to do, REA looks inside the game.
-
-## How it works
-
-Your agent takes one of two paths.
-
-| | Path 1: finish what exists | Path 2: build it from zero |
-|---|---|---|
-| When | A co-op mod exists but is buggy, stalled or abandoned. Most loved games are here. | Nothing usable exists. |
-| How | Find the last build, mine its bug reports (issues, forums, Discord), audit the code, fix it as a separate package, test, ship. | Reverse engineer the game and engine, hook in, show the second player, sync enemies, world and story, handle level changes and saves, test, ship. |
-| Skills | `coop-research`, `coop-revive`, `coop-qa` | `coop-reverse-engineer`, `coop-build-from-zero`, `coop-networking`, `coop-sync-testing`, `coop-qa` |
-| Guide | [Reviving abandoned mods](playbook/reviving-abandoned-mods.md) | [How co-op mods work](playbook/how-coop-mods-work.md) |
-
-Both paths end the same way: automated tests with real game clients
-([QA](playbook/automated-qa.md)), easy install, Steam relay networking
-([networking](playbook/networking.md)), and a pull request back here.
-
-### Sync test tools
-
-Ready-made, game-agnostic tools for building and testing co-op sync, in [`tools/`](tools/README.md).
-Each has tests, mutation twins and one command that prints `ALL OK`
-(`python -I tools/test_all.py` runs them all).
-
-| Tool | What it does |
+| Mode | Who owns what |
 |---|---|
-| [chaos](tools/chaos) | UDP relay that adds lag, loss, reorder, duplicates and one-way cuts between real clients, with live control |
-| [flight](tools/flight) | Flight recorder for your mod plus an analyzer: lines up 2 to 4 machines, finds the first desync, shrinks it and writes a regression test |
-| [fuzz](tools/fuzz) | Seeded N-player co-op fuzzer with invariant oracles (converge, no double apply, one owner, no dupes, nothing stale) |
-| [ownership](tools/ownership) | Small C++ library: one owner per NPC with epochs, handoff, and stale echo rejection |
-| [fakeworld](tools/fakeworld) | Example in-memory game world for testing sync without launching the game |
-| [gameslot](tools/gameslot), [gamepool](tools/gamepool) | Lock and warm pool for running several game copies on one PC safely |
-| [scenarios](tools/scenarios), [bots](tools/bots) | JSON start states plus multi-bot co-op playbooks with a state diff after each step |
-| [animcheck](tools/animcheck) | Compares animation and pose across machines and flags sliding, T-poses, floating and rubber-banding |
-| [bridge](tools/bridge), [inspect](tools/inspect) | An RPC server template for inside your game (console line, state dump, save, load, screenshot) with a Python client, plus a live side-by-side view of every copy |
-| [hotreload](tools/hotreload) | Split your mod into a loader and a core, and swap the core inside the running games instead of restarting them |
-| [mutants](tools/mutants), [buildlock](tools/buildlock) | Runtime mutation twins for every fix, and a shared build lock with a build cache |
+| **Shared team** | One garage, two drivers. Each player runs their own car. Facilities, research and the budget come from player 1. |
+| **Versus** | A team each, racing each other. Shared calendar and results, separate garages. |
+| **Co-op career** | Two teams, one career. Shared progression and calendar, separate garages. |
 
-[Fast iteration](playbook/fast-iteration.md) shows where the time in an in-game fix round goes and which tool removes each wait.
+The database decides how "my side of the garage" is defined, and it is already clear from the save
+schema: `Save_CarConfig` is keyed by `TeamID` **and** `LoadoutID`, `Save_DriverCommands` and
+`Save_PlayerStrategyStints` by `LoadoutID`, and `Buildings_HQ` by `TeamID`. So a player's cars are a
+`LoadoutID` and a team's facilities are a `TeamID`. That mapping is what the authorisation layer
+enforces.
 
-They come from the [fnv-coop](https://github.com/cranebeaker/fnv-coop) project. The
-`coop-sync-testing` skill tells your agent when to use which.
+## Goal
 
-## What you can co-op
+A player installs one mod, hosts from the main menu, and a friend joins and picks a team that nobody
+else has taken. From then on both play one career together — the same calendar, the same race, the same
+results — without either needing to understand a single thing about how it works.
 
-| Your game is... | Typical approach | Tools your agent uses |
-|---|---|---|
-| On an engine with multiplayer already (Unreal 1/2, Source, id Tech, X-Ray) | Make the single-player logic run on the existing netcode with script mods | Script source, SDK compilers, mod packages |
-| Bethesda (Gamebryo, Creation) | Script extender plugin, host-authority sync, reuse Tilted Online style designs | SKSE / F4SE / xNVSE, Ghidra, REA |
-| Unity | Harmony patches through a mod loader, a networking library in C# | BepInEx, MelonLoader, dnSpyEx, Il2CppDumper |
-| Unreal Engine 4/5 | Lua or C++ mods with an SDK dump of the game's classes | UE4SS, Dumper-7 |
-| RE Engine, FromSoftware, other proprietary | DLL hooks; extend the game's own online features where they exist | REFramework, MinHook, Ghidra, REA, x64dbg |
-| Decompiled or open source (N64 decomps, KeeperFX, OpenMW, source ports) | Add networking directly in the code | A compiler, the decomp, Docker cross builds |
-| Console only (PS1, PS2, N64, Dreamcast, GameCube, Wii, GBA, ...) | Decomp or recompiled PC port first; else emulator netplay, or a memory-sync mod between two emulators | Decomps and recompilers (N64Recomp, XenonRecomp), PCSX2 PINE, Dolphin Memory Engine, BizHawk / mGBA Lua |
-| Closed binary, nothing else | Full reverse engineering of state, saves and levels; the hardest path | REA, GhidraMCP, ida-pro-mcp, Frida, Cheat Engine |
+Practical targets, in the order they matter:
 
-Console games: [emulator co-op](playbook/console-emulators.md) and
-[decompiled or recompiled PC ports](playbook/decomp-and-recomp.md), the route Ocarina of Time co-op took.
+1. **One race, fully synced.** 22 cars, one shared clock, from lights out to the flag.
+2. **A shared career.** Contracts, car development and finances agreed between the machines.
+3. **Easy install.** The client is one `.pak` file. The host needs one extra executable. Nothing else.
+4. **Launch from the game.** Hosting starts from the main menu, in the game's own UI, not from a
+   command line.
 
-Couch co-op on one PC? [Split screen](playbook/split-screen.md) builds on Nucleus Co-op
-(Windows) and PartyDeck (Linux and Steam Deck), both open source.
+## How
 
-Full tool list with install notes: [playbook/tools.md](playbook/tools.md).
-Which engine has co-op work you can reuse: [playbook/engine-families.md](playbook/engine-families.md).
+### The stack
 
-## Games so far
+```
+host game ── coop_agent.dll (injected) ──┐
+                                         ├── coop-link (one per machine) ── TCP ── coop-supervisor (relay)
+client game ── coop_agent.dll (injected) ┘
+```
 
-| Game | What was done | Release | Write-up |
-|---|---|---|---|
-| Deus Ex (2000) | Revived the HX co-op mod: fix package, Steam relay, automated test suite | [deus-ex-coop](https://github.com/cranebeaker/deus-ex-coop) | [games/deus-ex](games/deus-ex/README.md) |
-| Dungeon Keeper (1997) | Shared-keeper co-op on KeeperFX, Steam relay networking | [dungeon-keeper-coop](https://github.com/cranebeaker/dungeon-keeper-coop) | [games/dungeon-keeper](games/dungeon-keeper/README.md) |
-| S.T.A.L.K.E.R. Shadow of Chernobyl | Fix patch for Shadow of COOP (true ending unlocked) | [stalker-soc-coop-fixes](https://github.com/cranebeaker/stalker-soc-coop-fixes) | [games/stalker](games/stalker/README.md) |
-| Fallout: New Vegas | Story co-op: shared quests, dialogue results, karma and reputation | [fnv-coop](https://github.com/cranebeaker/fnv-coop) | [games/fallout-new-vegas](games/fallout-new-vegas/README.md) |
-| Zelda: Ocarina of Time | Fixes for a fully synced Ship of Harkinian co-op fork | [ocarina-coop](https://github.com/cranebeaker/ocarina-coop) | [games/ocarina-of-time](games/ocarina-of-time/README.md) |
+| Component | Role |
+|---|---|
+| `coop_agent.dll` | Injected into the game. A 5-byte hook on the game thread applies state changes from a mailbox, and it serves a small HTTP endpoint the in-game menu uses. |
+| `coop-link` | One per machine. Reads the local simulation, publishes it, receives the other machine's, and decides what to correct. |
+| `coop-supervisor` | The relay between the two machines. |
+| `CoopBridge_P.pak` | The Gameface UI: a Multiplayer entry in the main menu, a lobby screen, and a bridge script. |
 
-Plus a [directory of 230+ co-op mods and gaps](DIRECTORY.md) for other games (browse and search it at
-[coopanything.app](https://coopanything.app)), each with
-what it really syncs and how well it was tested.
+Everything is Rust except the UI, which is JavaScript in the game's own module system.
 
-## Everyone is a contributor
+### Why it is hard: the simulation has no fixed timestep
 
-Every agent that works on a game sends what it learned back as a pull request: a fix, a
-bug list, a test, a failed attempt, a corrected directory entry. One person's agent gets a
-game halfway; the next one starts from there. Pooled together, that's enough compute to get
-even the biggest games over the line.
+This is the single most important fact in the project, and it was learned the hard way over four
+failed races.
 
-- Your agent opens the PR as a draft; you review the diff and publish it.
-- Each game gets its own release repo, linked from [Games so far](#games-so-far).
-- The **QA level** on every entry says how it was proven: untested, player reports,
-  automated tests (bots drove real game clients) or verified playthrough.
+```
+Config/DefaultEngine.json
+  bSubstepping        = False
+  MaxPhysicsDeltaTime = 0.033333
+```
 
-[CONTRIBUTING.md](CONTRIBUTING.md) has the details. Chat with other contributors on [Discord](https://discord.gg/EXGB49R82t).
+`bSubstepping=False` means the simulation consumes a **variable wall-clock delta**, up to 33 ms per
+frame. There is no tick number, no fixed step, no way for two machines to be on the same step.
 
-## FAQ
+The consequence is that overwriting state cannot work. You write a car's distance, and the simulation
+has already advanced past your value by an amount proportional to the frame-time difference between
+the two machines. In the last session **1.88 million field writes were applied while the distance delta
+grew to 62 km.** The writes landed. The simulation simply stepped past them.
 
-<details><summary>Do I need to know how to code?</summary>
-No. You need the game, a coding agent and some patience. The agent asks before installing
-anything or using your accounts.
-</details>
+So correction is not "copy the host's value". It is a *delta, scaled by the gap between the two
+simulations' clocks*, chosen so the receiving simulation converges on the host's trajectory instead of
+snapping to a position it will immediately leave. That model lives in `coop-proto::correct`.
 
-<details><summary>Does my friend need to buy anything?</summary>
-Everyone needs the game installed. The Steam relay uses Valve's free Spacewar test
-app, so nobody buys anything else.
-</details>
+The second trap: **`race_time` is not a clock.** It is `max(lap_time)` across all cars, so it freezes
+whenever no car completes a lap — exactly when you need it to keep ticking. `SIM_TIME`, at `0x99AF1C`
+in this build, is the real clock.
 
-<details><summary>Is this legal?</summary>
-Modding games for co-op with friends is what the modding community has always done.
-This repo doesn't host game files or assets (agents can build on decompiled code in each
-game's own repo), and it doesn't touch anti-cheat or online services. See the rules below.
-</details>
+### Why the UI is a patch, not an overlay
 
-<details><summary>Will it work for my game?</summary>
-Yes. Some games need more agent hours than others, but it's definitely possible. Check the
-<a href="DIRECTORY.md">directory</a> first: if a co-op mod already exists (path 1), most
-projects take days at most. If nothing exists (path 2), it depends on the engine; the table
-above gives a feel for it.
-</details>
+The front-end is Gameface (Cohtml) running plain AMD modules with preact. `FrontendApp.js` renders
+`FrontendModule`, which renders `FrontendData.screensLUT[screenID].component`. Navigation goes through
+`FrontendNavigation.set`, which dispatches `onChange` *and* sends the `FrontendScreenChanged` engine
+event.
 
-## Documentation
+So the multiplayer screen is registered in `screensLUT` and rendered like any built-in screen, and the
+menu entry is a real `MenuButton` inserted into the real main menu. It inherits the game's layout,
+focus order, styling and input handling because it *is* the game's UI. A floating panel in the corner
+would have been less work and would have looked and felt wrong.
 
-- [AGENTS.md](AGENTS.md): rules and phase map for agents · [MCP server](playbook/mcp.md) · [skills](.agents/skills) · [sync test tools](tools/README.md)
-- Playbook: [triage](playbook/triage.md) · [research](playbook/research.md) ·
-  [Discord bug mining](playbook/discord-export.md) · [reverse engineering](playbook/reverse-engineering.md) ·
-  [tools](playbook/tools.md) · [how co-op mods work](playbook/how-coop-mods-work.md) ·
-  [engine families](playbook/engine-families.md) · [reviving mods](playbook/reviving-abandoned-mods.md) ·
-  [networking](playbook/networking.md) · [Steam Spacewar relay](playbook/networking-steam-spacewar.md) ·
-  [split screen](playbook/split-screen.md) · [console emulators](playbook/console-emulators.md) · [Switch](playbook/switch.md) ·
-  [decomp and recomp](playbook/decomp-and-recomp.md) ·
-  [automated QA](playbook/automated-qa.md) · [multi-agent workflows](playbook/multi-agent-workflows.md) ·
-  [network chaos](playbook/network-chaos-testing.md) · [desync hunting](playbook/desync-hunting.md) ·
-  [fuzzing sync](playbook/fuzzing-coop-sync.md) · [actor ownership](playbook/actor-ownership.md) ·
-  [fake world testing](playbook/fake-world-testing.md) · [several game copies](playbook/multi-instance-testing.md) ·
-  [bots and playbooks](playbook/bots-and-playbooks.md) · [animation sync](playbook/animation-sync-checks.md) ·
-  [fast iteration](playbook/fast-iteration.md) · [in-game bridge](playbook/in-game-bridge.md) · [hot reload](playbook/hot-reloading-your-mod.md) ·
-  [story sync by effects](playbook/effect-capture-story-sync.md) ·
-  [methods](playbook/methods.md) · [lessons](playbook/lessons.md)
-- [DIRECTORY.md](DIRECTORY.md) and its [schema](data/SCHEMA.md)
+One consequence worth knowing: the Gameface context has `fetch` and `XMLHttpRequest` but no
+`child_process`. The UI cannot start a process. That is why hosting is an HTTP call to the already
+resident agent rather than the menu launching an executable — and why the client can be a single `.pak`
+with no extra program.
 
-## Rules
+## Progress
 
-Don't commit game files or assets here. Building on decomps is fine; a game's code lives in its own repo. No
-personal info. Credit the mods you build on and give fixes back to them. Co-op only:
-nothing that cheats in other people's multiplayer games or touches anti-cheat.
+Measured, not estimated. "Works" means a test proves it, "not wired" means the code exists and is
+tested in isolation but nothing calls it yet.
 
-License: MIT.
+### Working
+
+| | Evidence |
+|---|---|
+| Agent injects and hooks the game thread cleanly | First clean install in the project's history, after finding that `VirtualAlloc(NULL, …)` returns ~2 TB away and truncated every jump. Fires 25–60×/s, game stays responsive. |
+| Writes are applied on the game thread | A two-buffer mailbox. Writing from the link process crashed the game (`EXCEPTION_ACCESS_VIOLATION reading 0xF3C`) because the game thread was mid-read. |
+| Car position, speed and heading are read and published | Real values from a live race. |
+| Tyre temperatures and wear are read | Surface 107–135 °C, carcass 99–121 °C, condition 0.90–0.92, `out-of-range values: 0 of 88`. Sync is staged `observe` → `wear` → `full`; the default writes nothing. |
+| Correction model | Time-gap scaled, wraparound-safe heading, converges over 400 frames in test. Wired into `coop-link`. |
+| Race-control messages reach the client | 1-byte width safety, tag collision (`TAG_READY` vs `TAG_AGENT` both 6) fixed. |
+| Main-menu integration | 29 checks against a copy of the game's own render tree: entry lands in `MainMenu_rightBox`, carousel intact, left column untouched. |
+| Pak deploy and preflight | `deploy_pak.py` refuses success unless the installed pak is byte-identical to the build. `preflight.py` separates wiring from flow. |
+
+### Not wired yet
+
+| | State |
+|---|---|
+| **Start hold** (wait for both players before the lights) | Written and tested in `coop-link/src/starthold.rs` — 8 tests. **Nothing calls it.** This is the "lights hold for player 2" behaviour, and it does not exist in a running game. |
+| **Authorisation** (who may write what, per mode) | Written and tested in `coop-auth` — 13 tests, covering the three modes. **Nothing calls it.** The rules are decided; nothing enforces them. |
+| **Race sync** | The correction model is wired, but no session has converged. See below. |
+
+### Not working
+
+- **Location sync does not hold.** Cars diverge during a race.
+- **Car damage is not synced.**
+- **Pit stops are not synced.** The whole grid has pitted on one machine and not the other.
+- **Restarting a red-flagged session is broken.** Cars have left the pits while one side was not ready.
+- **The lobby screen has never been rendered on screen.** Its button and layout are verified only
+  against a copy of the game's render tree, never against the game.
+
+### By the numbers
+
+| | |
+|---|---|
+| Rust | 12,788 lines |
+| Tests | 99 Rust, 29 UI — all passing |
+| Tests that cannot run without a game | 3, in `coop-mem --test loop_stub_volume`; that binary faults off-game by design |
+| Live races attempted | 4; none synchronised |
+| Playthroughs verified | 0 |
+
+## Build
+
+Rust 1.75+. No game and no second machine are needed to build or test.
+
+```sh
+cd mod/coop-rs
+cargo test --workspace        # 99 tests
+cargo build --release
+```
+
+| Task | Command |
+|---|---|
+| UI integration test | `node mod/tools/menu_test.js` |
+| Is the installed UI pak the one you built? | `python mod/tools/deploy_pak.py --check` |
+| Is everything wired for a session? | `python mod/tools/preflight.py` |
+
+Find your install automatically (Steam library folders are read, so any drive works), or point at it:
+
+```sh
+python mod/tools/deploy_pak.py --check          # finds the game via Steam
+set COOP_GAME_DIR=D:\Games\F1 Manager 2024       # or say where it is
+```
+
+## Plan
+
+Ordered by dependency, because almost everything waits on the clock being right.
+
+1. **Confirm the multiplayer entry actually renders on screen.** One game launch. It has never been
+   seen, and until it has, the UI is a claim rather than a fact.
+2. **Wire the start hold.** The code and its tests exist; the publisher needs to call it. This is the
+   specific thing that "lights must hold for player 2" requires.
+3. **Give both simulations one clock.** Publish `SIM_TIME` with every frame and correct against the
+   gap. Then one race, start to finish, with no divergence.
+4. **Damage, then pit stops, then grid state** — in that order, because all three depend on the clock.
+5. **Wire the authorisation layer** and finish the career screens: contracts, car development,
+   facilities, finances.
+6. **Reduce the install.** Collapse the three config files into one, and move the relay onto an agent
+   thread so `coop-supervisor.exe` disappears.
+
+## Problems worth reading
+
+If you are picking this up, these are the traps that cost the most time. Each is a measured cause, not
+a theory.
+
+| Symptom | Real cause |
+|---|---|
+| "Trampoline fault / collapsed stack" on hook install | `VirtualAlloc(NULL, …)` returns ~2 TB from the module, so every `E9 rel32` jump was truncated. Allocate within ±2 GB. |
+| Game crashed when the link wrote state | The game thread was mid-read. Writes must happen on the game thread, from a mailbox. |
+| Race diverged while thousands of writes "succeeded" | No fixed timestep. Writes were applied and immediately stepped past. Correct by delta, not by value. |
+| `Ready` decoded as `Agent` | Both tags were value 6. |
+| Sync appeared to work, then fell 62 km behind | `race_time` is `max(lap_time)` and freezes. Use `SIM_TIME`. |
+| Multiplayer button "did not appear" (twice) | Once, the installed `.pak` was two days older than the build — the game holds the file open, so the copy had silently failed and **no code had ever run**. Now `deploy_pak.py` verifies the installed pak against the build. |
+| Same symptom, second cause | The UI required `project/apps/FrontendRouter`, which does not exist in the export, so RequireJS failed the *entire* module load and returned before patching anything. Also: `preact.h` deletes `attributes.children`, and `MainMenu` is a decorator whose inner class is what draws the menu. |
+
+The lesson, recorded everywhere in `mod/docs/`: **verify the premise before building on it.** Every one
+of the four failed races added replicated fields while never establishing that the simulation could be
+made to agree.
+
+## Where things are
+
+| Path | What |
+|---|---|
+| `mod/coop-rs/` | The Rust workspace: agent, link, relay, protocol, authorisation |
+| `mod/pak/` | The Gameface UI override |
+| `mod/tools/` | Preflight gate, pak deploy/verify, hot-reload server, watchers |
+| `mod/client/` | What gets copied onto the second machine |
+| `mod/docs/` | The design record: what failed, why, and what the export proves |
+| `mod/methodology/` | How this was developed with two machines. **Not part of the mod.** |
+| `games/f1-manager-2024/` | Write-up in the Co-op Anything directory format |
+
+Start with [`mod/docs/COOP-PLAN.md`](mod/docs/COOP-PLAN.md) for the design, and
+[`mod/docs/NOTES.md`](mod/docs/NOTES.md) for the raw record.
+
+## Credit
+
+Built on the [Co-op Anything](https://github.com/cranebeaker/coop-anything) playbook, which this repo
+is a fork of. The hub's own content is intact here — `playbook/`, `games/`, `tools/`, `DIRECTORY.md` —
+because the playbook is how the work is being done. The upstream README is preserved at
+[`mod/docs/upstream-readme.md`](mod/docs/upstream-readme.md).
+
+Licence: MIT, as the hub.

@@ -8699,7 +8699,7 @@
   year: 2024
   engine: Unreal Engine 5
   project: F1 Manager 2024 co-op (work in progress)
-  url: https://github.com/cranebeaker/coop-anything/tree/main/games/f1-manager-2024
+  url: https://github.com/ThatEd/F1Manager2024
   other_urls: []
   kind: mod
   status: prototype
@@ -8723,12 +8723,13 @@
     moved to time-gap-scaled correction against SIM_TIME (race_time is max(lap_time) and freezes, so it is not a
     clock). Not yet synchronised: car positions, car damage, pit stops and the race-start hold. Also built: a
     Gameface main-menu entry and lobby screen with per-player team claims (verified against the game''s render tree
-    only, not yet on screen), and an authorisation layer for three modes - shared team (each player owns their
-    LoadoutID, facilities and research from the host), versus, and co-op career. 102 Rust tests and 29 UI checks
-    pass; a human has not played it. Design record, including what each failure proved, is in mod/docs/.'
+    only, not yet on screen), and the write rules for three modes - shared team (each player owns their LoadoutID,
+    facilities and research from the host), versus, and co-op career - written and tested but not yet called by
+    anything, so no mode is enforced in a running game. 99 Rust tests and 29 UI checks pass; a human has not
+    played it. Design record, including what each failure proved, is in mod/docs/.'
   sources:
   - https://store.steampowered.com/app/2591280/
-  - https://github.com/cranebeaker/coop-anything/tree/main/games/f1-manager-2024
+  - https://github.com/ThatEd/F1Manager2024
   - https://github.com/IUrreta/DatabaseEditor
   checked: '2026-10-27'
   searched:

@@ -97,10 +97,15 @@ established that `preact.h` deletes `attributes.children` (children live on `vno
 `EMPTY_CHILDREN` is shared so trees must be rebuilt rather than mutated, and that `MainMenu` is a
 `Focusable.decorate` wrapper whose inner class is what actually draws the menu.
 
+**Three game modes designed against the save schema rather than guessed.** `Save_CarConfig` is keyed
+`TeamID`+`LoadoutID`, so a player's cars are a loadout and a team's facilities are a team; that is what
+shared-team mode means concretely. The rules are written and tested in `coop-auth`. **They are not
+called by anything yet**, so no mode is enforced in a running game.
+
 ## QA
 
 ```sh
-cd mod/coop-rs && cargo test --workspace     # 102 tests, no game and no second machine needed
+cd mod/coop-rs && cargo test --workspace     # 99 tests, no game and no second machine needed
 node mod/tools/menu_test.js                  # 29 checks
 python mod/tools/deploy_pak.py --check       # installed UI pak matches the build
 python mod/tools/preflight.py                # session wiring
@@ -114,9 +119,19 @@ lives in `mod/methodology/`, not in the mod.
 `COOP_GAME_DIR` overrides it. The UI test's module-id check needs the game's UI export, which is not
 ours to redistribute, so it is skipped unless `COOP_UI_EXPORT` points at one.
 
-Last suite result: **102 Rust tests and 29 UI checks passing, 2026-10-27.** One integration test
-(`coop-mem --test loop_stub_volume`) faults without a running game, as expected: it needs live game
-memory.
+**What the tests do not prove.** Two pieces of code pass their tests while nothing calls them, and that
+distinction matters more than the pass count:
+
+- `coop-link/src/starthold.rs` — 8 tests for the race-start hold, wired into no caller.
+- `coop-auth` — 13 tests for the three modes' write rules, called from nowhere.
+
+Both are correct in isolation and absent from a running game. The correction model is the one large
+component that is genuinely plumbed through `coop-link` into the agent.
+
+Last suite result: **99 Rust tests and 29 UI checks passing, 2026-10-27.** A second test binary,
+`coop-mem --test loop_stub_volume`, holds 3 more tests and faults without a running game, because it
+drives 600 statements through the loop stub against the game's own SQLite. Those 3 are not counted
+above and have not been shown to pass.
 
 The UI checks assert that every module id the integration asks for exists in the export (this would have
 caught the missing router), that the entry lands as the first child of `MainMenu_rightBox` with the
