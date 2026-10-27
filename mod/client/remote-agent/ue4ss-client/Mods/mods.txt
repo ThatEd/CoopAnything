@@ -1,0 +1,2 @@
+CoopClientMod : 1
+

@@ -2,3 +2,29 @@
 __pycache__/
 build/
 coop-bots-out/
+
+# --- F1 Manager 2024 work (mod/) ---
+# Rust build output
+mod/coop-rs/target/
+*.pyc
+
+# The packed UI archive is build output. Committing it is how a stale pak shipped once already:
+# tools/deploy_pak.py rebuilds it from mod/pak/f1manager24/ and verifies what is inside.
+mod/pak/*.pak
+
+# Runtime output, not source
+coop_rsm.txt
+coop_shadow.txt
+*.trace
+coop_agent.log
+coop-link*.log
+client-run.log
+watch.out.txt
+watch_live.txt
+
+# Local tool state (a copied repak.exe, per-machine paths)
+mod/tools/bin/
+
+# Scratch
+*.tmp
+*.bak

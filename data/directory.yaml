@@ -8695,3 +8695,49 @@
   - https://github.com/multiplayereverything/spooky-together/releases/tag/v0.2.11
   checked: '2026-10-27'
   made_with_coop_anything: true
+- game: F1 Manager 2024
+  year: 2024
+  engine: Unreal Engine 5
+  project: F1 Manager 2024 co-op (work in progress)
+  url: https://github.com/cranebeaker/coop-anything/tree/main/games/f1-manager-2024
+  other_urls: []
+  kind: mod
+  status: prototype
+  coop_scope:
+    players_visible: partial
+    story: unknown
+    enemies: no
+    world_state: partial
+    items: unknown
+  players: '2'
+  networking: direct-ip
+  open_source: yes
+  last_activity: 2026-10
+  qa: none
+  notes: 'Steam appid 2591280, buildid 17356935, game v1.11.0.39891, UE 5.1. No netcode exists in the game,
+    so this is a ground-up external stack: an injected DLL with a 5-byte hook that applies writes on the game
+    thread, a link process that reads and publishes car state, and a TCP relay. Four live race sessions were
+    attempted and none held synchronisation; the measured cause is that the simulation has no fixed timestep
+    (bSubstepping=False, MaxPhysicsDeltaTime=0.033333), so two machines are never at the same step and per-field
+    overwriting cannot converge - 1.88M writes were applied while the distance delta grew to 62 km. Work has
+    moved to time-gap-scaled correction against SIM_TIME (race_time is max(lap_time) and freezes, so it is not a
+    clock). Not yet synchronised: car positions, car damage, pit stops and the race-start hold. Also built: a
+    Gameface main-menu entry and lobby screen with per-player team claims (verified against the game''s render tree
+    only, not yet on screen), and an authorisation layer for three modes - shared team (each player owns their
+    LoadoutID, facilities and research from the host), versus, and co-op career. 102 Rust tests and 29 UI checks
+    pass; a human has not played it. Design record, including what each failure proved, is in mod/docs/.'
+  sources:
+  - https://store.steampowered.com/app/2591280/
+  - https://github.com/cranebeaker/coop-anything/tree/main/games/f1-manager-2024
+  - https://github.com/IUrreta/DatabaseEditor
+  checked: '2026-10-27'
+  searched:
+  - 'GitHub repositories and code search, 2026-10-26 and 2026-10-27: "F1 Manager 2024 coop", "F1Manager24 coop",
+    "F1 Manager 2024 multiplayer", "F1 Manager coop multiplayer" - no co-op project; found DatabaseEditor (save
+    editor), F1Manager2024Logger (telemetry), trainers and setup tools only'
+  - 'Steam store, discussions and news, 2026-10-26'
+  - 'Nexus Mods (403 to automated fetch), ModDB (no game page under that slug), 2026-10-26'
+  - 'Reddit r/F1Manager search for co-op/coop: no results, 2026-10-26'
+  - 'Not checked: the game''s Discord (no public invite found)'
+  made_with_coop_anything: true
+
