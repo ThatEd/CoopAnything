@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Build, verify and deploy the co-op UI pak.
 
 Why this exists
@@ -34,12 +34,13 @@ import subprocess
 import sys
 import tempfile
 
+import gamedir
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(HERE)
 PAK_SRC = os.path.join(PROJECT, 'pak', 'f1manager24', 'Content', 'UIGameface')
 PAK_OUT = os.path.join(PROJECT, 'pak', 'CoopBridge_P.pak')
 PAK_NAME = 'CoopBridge_P.pak'
-DEFAULT_GAME = r'E:\Steam\steamapps\common\F1 Manager 2024'
 
 # The second machine, reached over a network share. Deploying to it was forgotten once and the result
 # was a session where one machine ran new code and the other ran none.
@@ -183,13 +184,24 @@ def deploy(game_root: str, label: str = 'host') -> bool:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument('--game', default=DEFAULT_GAME)
+    ap.add_argument('--game', default=None,
+                    help='game install root; default: found automatically from COOP_GAME_DIR or Steam')
     ap.add_argument('--client-share', default=DEFAULT_CLIENT_SHARE,
                     help='root of the second machine\'s drive share; empty to skip')
     ap.add_argument('--check', action='store_true', help='only compare the installed pak with source')
     ap.add_argument('--no-deploy', action='store_true')
     ap.add_argument('--host-only', action='store_true', help='do not touch the second machine')
     args = ap.parse_args()
+
+    # Resolve the install rather than assuming a drive letter. A second machine is a convenience of the
+    # development setup, not a requirement of the mod, so its absence is a notice and not an error.
+    host_root = gamedir.find_game_dir(args.game)
+    if not host_root:
+        if args.game:
+            print('no F1 Manager 2024 install at %s' % args.game)
+        gamedir.explain_failure()
+        return 1
+    print('game: %s' % host_root)
 
     client_root = '' if args.host_only or not args.client_share else client_game_root(args.client_share)
     client_up = bool(client_root) and os.path.isdir(client_root)
@@ -230,7 +242,7 @@ def main() -> int:
 
     if args.check:
         print('\n3. installed paks')
-        problems = check_installed(args.game, 'host')
+        problems = check_installed(host_root, 'host')
         for p in problems:
             print('  FAIL %s' % p)
         if client_root:
@@ -262,7 +274,7 @@ def main() -> int:
         return 0
 
     print('\n5. deploy')
-    targets = [('host', args.game)]
+    targets = [('host', host_root)]
     if client_root:
         if client_up:
             targets.append(('client', client_root))

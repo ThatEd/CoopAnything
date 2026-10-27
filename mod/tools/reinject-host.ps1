@@ -8,7 +8,25 @@
 # Re-injecting by path into a process that already has that path loaded is a silent no-op - LoadLibraryW
 # returns the existing handle - and that has cost two test cycles.
 
-$d = 'E:\Steam\steamapps\common\F1 Manager 2024\F1Manager24\Binaries\Win64'
+param(
+    # The game's Win64 folder, if the automatic lookup picks the wrong install.
+    [string]$GameDir = $env:COOP_GAME_DIR
+)
+
+$d = $null
+if ($GameDir) {
+    $d = Join-Path $GameDir 'F1Manager24\Binaries\Win64'
+} else {
+    # Resolve through Steam rather than assuming a drive letter: same lookup the Python tools use.
+    $found = & python (Join-Path $PSScriptRoot 'gamedir.py') 2>$null
+    if ($LASTEXITCODE -eq 0 -and $found) {
+        $d = Join-Path $found.Trim() 'F1Manager24\Binaries\Win64'
+    }
+}
+if (-not $d -or -not (Test-Path $d)) {
+    Write-Output 'GAME NOT FOUND - set COOP_GAME_DIR to the install folder (the one containing F1Manager24)'
+    exit 1
+}
 Set-Location $d
 
 $game = Get-Process F1Manager24 -ErrorAction SilentlyContinue |

@@ -1,8 +1,8 @@
-# Confirm the client is running the current build and is talking to its agent.
+﻿# Confirm the client is running the current build and is talking to its agent.
 #
 # Run through `remote.py runfile`. Reads only.
 
-$d = 'E:\SteamLibrary\steamapps\common\F1 Manager 2024\F1Manager24\Binaries\Win64'
+$d = if ($env:COOP_CLIENT_GAME) { Join-Path $env:COOP_CLIENT_GAME 'F1Manager24\Binaries\Win64' } else { 'C:\Program Files (x86)\Steam\steamapps\common\F1 Manager 2024\F1Manager24\Binaries\Win64' }
 Set-Location $d
 
 Write-Output '=== coop-link.exe on disk (must match the host build) ==='

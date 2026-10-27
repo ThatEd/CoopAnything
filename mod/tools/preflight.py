@@ -33,19 +33,20 @@ import struct
 import sys
 import time
 
-# Both machines are described by environment variables, because install paths are machine-specific:
+# Install paths are per-machine, so they are resolved rather than hardcoded:
 #
-#   COOP_HOST_GAME  path to the game install with the agent, e.g. C:\...\F1 Manager 2024
-#   COOP_REMOTE_SHARE  share root of the second machine, e.g. \\OTHER-PC\e
+#   COOP_GAME_DIR      the install folder (the one containing F1Manager24); else found via Steam
+#   COOP_REMOTE_SHARE  share root of a second machine, e.g. \\OTHER-PC\e
 #
-# With COOP_REMOTE_SHARE unset the client checks are skipped rather than pointed at someone else's PC.
+# The second machine is how this work is developed, not something the mod needs, so with
+# COOP_REMOTE_SHARE unset its checks are reported as not-configured instead of failing the gate.
+import gamedir
+
 SHARE = os.environ.get('COOP_REMOTE_SHARE', '')
-_GAME_REL = r'SteamLibrary\steamapps\common\F1 Manager 2024\F1Manager24\Binaries\Win64'
-HOST_BIN = os.environ.get(
-    'COOP_HOST_GAME',
-    r'C:\Program Files (x86)\Steam\steamapps\common\F1 Manager 2024'
-    r'\F1Manager24\Binaries\Win64')
-CLIENT_BIN = (SHARE + '\\' + _GAME_REL) if SHARE else ''
+_GAME_REL = os.path.join('F1Manager24', 'Binaries', 'Win64')
+_HOST_ROOT = gamedir.find_game_dir()
+HOST_BIN = os.path.join(_HOST_ROOT, _GAME_REL) if _HOST_ROOT else ''
+CLIENT_BIN = os.path.join(SHARE, 'SteamLibrary', 'steamapps', 'common', 'F1 Manager 2024', _GAME_REL) if SHARE else ''
 AGENT_PORT = 45991
 RELAY_PORT = 45990
 
@@ -75,7 +76,7 @@ class MBI(CC.Structure):
 
 
 class Check:
-    """A checklist with two severities.
+    """A checklist with three severities.
 
     `add` is a wiring check: it must pass before a race is started, and a failure means something is
     pointed at the wrong process.
@@ -83,6 +84,10 @@ class Check:
     `pending` is a flow check: it can only pass once a session is actually running, so before a race it
     reports as PENDING rather than FAIL. Keeping these apart on purpose - the alternative is to weaken a
     real check so the gate goes green, which is exactly how three sessions were lost.
+
+    `optional` is for checks that belong to this project's development setup rather than to the mod.
+    Running a second machine is how the work is tested, not something a player needs, so with no second
+    machine configured those checks report as SKIP and do not fail the gate.
     """
 
     def __init__(self):
@@ -96,6 +101,10 @@ class Check:
         self.rows.append(('flow', ok, name, detail))
         return ok
 
+    def optional(self, ok, name, detail):
+        self.rows.append(('optional', ok, name, detail))
+        return ok
+
     def report(self, require_flow=False):
         width = max(len(n) for _, _, n, _ in self.rows) + 2
         for kind, ok, name, detail in self.rows:
@@ -103,6 +112,8 @@ class Check:
                 mark = 'PASS'
             elif kind == 'flow' and not require_flow:
                 mark = 'WAIT'
+            elif kind == 'optional':
+                mark = 'SKIP'
             else:
                 mark = 'FAIL'
             print('%s  %-*s %s' % (mark, width, name, detail))
@@ -388,15 +399,19 @@ def main():
     # rather than concluding "down" from one probe - that false negative cost a full preflight run
     # twice, and a gate that cries wolf gets bypassed, which defeats its purpose.
     #
-    # With no share configured this is a second local machine nobody asked for, so say so plainly
-    # instead of reporting a "down" share that was never set up.
+    # With no share configured, running a second machine is simply not part of this session. That is a
+    # normal way to work on the mod, so the checks are marked optional and do not fail the gate. When a
+    # share IS configured, they are real wiring checks and a down share is a real failure.
     if not CLIENT_BIN:
         reachable = False
-        c.add(False, 'second machine configured',
-              'set COOP_REMOTE_SHARE to the other machine\'s share to check it')
+        c.optional(False, 'second machine configured',
+                   'set COOP_REMOTE_SHARE to the other machine\'s share to include it in this gate')
     else:
         reachable = spin(CLIENT_BIN, tries=14, delay=3)
         c.add(reachable, 'client machine reachable', CLIENT_BIN if reachable else 'share is down')
+
+    # Which checker to use for the client's own results.
+    client_check = c.add if CLIENT_BIN else c.optional
 
     if reachable:
         c_dll, c_size = sha16(os.path.join(CLIENT_BIN, 'coop_agent.dll'))
@@ -493,7 +508,7 @@ def main():
                      'client hook has fired', 'clIENT agent has applied frames',
                      'client tyre mode is explicit', 'client is not reporting a missing agent',
                      'client is sending frames'):
-            c.add(False, name, 'client unreachable')
+            client_check(False, name, 'client unreachable')
 
     # The HOST's agent listener. The client's cannot be probed from here, so the client side is judged
     # from its own log instead - and a check that silently reported the host's port as the client's would
@@ -510,9 +525,11 @@ def main():
     # open, so the copy silently did not happen. A stale pak is compared by size and hash against the
     # build, which is cheap and cannot be fooled.
     for label, root in (('host', HOST_BIN), ('client', CLIENT_BIN)):
+        if not root:
+            continue
         if label == 'client' and not reachable:
             continue
-        # HOST_BIN ends in `<game>\F1Manager24\Binaries\Win64`, so the game root is three levels up.
+        # `root` is `<game>\F1Manager24\Binaries\Win64`, so the game root is three levels up.
         game_root = os.path.dirname(os.path.dirname(os.path.dirname(root)))
         installed = os.path.join(game_root, 'F1Manager24', 'Content', 'Paks', 'CoopBridge_P.pak')
         built = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),

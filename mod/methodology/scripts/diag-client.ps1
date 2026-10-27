@@ -1,4 +1,4 @@
-$d = 'E:\SteamLibrary\steamapps\common\F1 Manager 2024\F1Manager24\Binaries\Win64'
+﻿$d = if ($env:COOP_CLIENT_GAME) { Join-Path $env:COOP_CLIENT_GAME 'F1Manager24\Binaries\Win64' } else { 'C:\Program Files (x86)\Steam\steamapps\common\F1 Manager 2024\F1Manager24\Binaries\Win64' }
 
 Write-Output '=== client game process ==='
 Get-Process F1Manager24 -ErrorAction SilentlyContinue |

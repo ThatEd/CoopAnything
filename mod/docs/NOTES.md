@@ -3061,13 +3061,28 @@ Committing one machine's paths and addresses makes the repo wrong for everyone e
 at a stranger's PC. All of these were replaced before the first commit:
 
 - `\\<other-pc>\e` -> `COOP_REMOTE_SHARE` / `<share root>`
-- `E:\Steam\...` -> `COOP_HOST_GAME` / `<game dir>`
+- absolute game paths -> `COOP_GAME_DIR`, or found automatically from Steam's library list
 - `C:\Users\<user>\AppData\...` -> `%LOCALAPPDATA%`
-- `E:\FModel\Output\Exports\F1Manager24` -> `<export dir>`
+- the FModel UI export -> `COOP_UI_EXPORT`, and that one check is skipped when it is unset
 - `192.168.1.101` / `192.168.1.100` -> `<host-ip>` / `<client-ip>`, with `HOST_ADDR` and
   `localStorage["coop.host"]` carrying the real value at runtime
-- `E:\TEMP\coop-target` -> `target`, so the pinned build directory works anywhere
+- a pinned path outside the tree -> `target`, so the build directory works anywhere
 
-`tools/preflight.py`, `tools/deploy_pak.py`, `tools/remote.py`, `client/.../attach-client.ps1` and
+`tools/preflight.py`, `tools/deploy_pak.py`, `client/.../attach-client.ps1` and
 `pak/.../bridge.js` were all changed to read these from the environment or from storage. A scan of
 every committed text file for the old values returns zero hits.
+
+### Development method kept separate from the mod
+
+Two things were ours, not the mod's:
+
+- **A second machine.** Running a client PC is how this was tested. A player does not need it, and no
+  drive letter or share should be baked into anything that ships. `preflight.py` now treats the
+  second-machine checks as `SKIP` when `COOP_REMOTE_SHARE` is unset, and as real failures when it is set.
+- **Remote command tooling.** `remote.py` (execute on the other PC over an SMB share) and the
+  diagnostics that drive it are not part of the mod. They moved to `methodology/`.
+
+Install paths are resolved by `tools/gamedir.py` from the registry and
+`steamapps/libraryfolders.vdf`, so the tools work on any drive; `COOP_GAME_DIR` overrides it. The UI
+test's export check needs the game's UI dump, which is not ours to ship, so it is skipped unless
+`COOP_UI_EXPORT` points at one.

@@ -23,8 +23,12 @@ const path = require("path");
 const vm = require("vm");
 
 const PAK_ROOT = path.join(__dirname, "..", "pak", "f1manager24", "Content", "UIGameface");
-const EXPORT_ROOT = "E:/FModel/Output/Exports/F1Manager24/Content/UIGameface";
 const LOBBY = path.join(PAK_ROOT, "js", "coop", "lobby.js");
+
+// The check that every module id exists needs the game's own UI export, which is a large third-party
+// dump and is not part of this repo. That check is therefore conditional: it runs when COOP_UI_EXPORT
+// points at an export, and otherwise reports as skipped rather than failing or silently passing.
+const EXPORT_ROOT = process.env.COOP_UI_EXPORT || "";
 
 let failures = 0;
 let checks = 0;
@@ -367,7 +371,6 @@ function moduleIdsExistInExport(ids) {
     }
     return missing;
 }
-
 function run() {
     return runAsync();
 }
@@ -396,12 +399,21 @@ async function runAsync() {
         ids.push(id);
     }
     const uniqueIds = Array.from(new Set(ids));
-    const missing = moduleIdsExistInExport(uniqueIds);
-    ok(
-        missing.length === 0,
-        "every module id referenced exists in the export (" + uniqueIds.length + " checked)",
-        missing.join(", ")
-    );
+    if (!EXPORT_ROOT) {
+        checks++;
+        console.log("  SKIP  module ids against the game export (set COOP_UI_EXPORT to enable)");
+    } else if (!fs.existsSync(EXPORT_ROOT)) {
+        checks++;
+        failures++;
+        console.log("  FAIL  COOP_UI_EXPORT is set but does not exist: " + EXPORT_ROOT);
+    } else {
+        const missing = moduleIdsExistInExport(uniqueIds);
+        ok(
+            missing.length === 0,
+            "every module id referenced exists in the export (" + uniqueIds.length + " checked)",
+            missing.join(", ")
+        );
+    }
 
     // ---- 3. boot with the real MainMenu decorator shape
     const env = makeProvided();

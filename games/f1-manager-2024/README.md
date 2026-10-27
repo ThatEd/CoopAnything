@@ -100,11 +100,19 @@ established that `preact.h` deletes `attributes.children` (children live on `vno
 ## QA
 
 ```sh
-cd mod/coop-rs && cargo test --workspace     # 102 tests
+cd mod/coop-rs && cargo test --workspace     # 102 tests, no game and no second machine needed
 node mod/tools/menu_test.js                  # 29 checks
 python mod/tools/deploy_pak.py --check       # installed UI pak matches the build
 python mod/tools/preflight.py                # session wiring
 ```
+
+None of these require a second PC. `preflight.py` checks one only if `COOP_REMOTE_SHARE` is set;
+otherwise those checks report `SKIP`. Running two machines was this project's development method and
+lives in `mod/methodology/`, not in the mod.
+
+`deploy_pak.py` finds the game through Steam's library list, so no drive letter has to be assumed;
+`COOP_GAME_DIR` overrides it. The UI test's module-id check needs the game's UI export, which is not
+ours to redistribute, so it is skipped unless `COOP_UI_EXPORT` points at one.
 
 Last suite result: **102 Rust tests and 29 UI checks passing, 2026-10-27.** One integration test
 (`coop-mem --test loop_stub_volume`) faults without a running game, as expected: it needs live game

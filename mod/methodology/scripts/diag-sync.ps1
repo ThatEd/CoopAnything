@@ -1,8 +1,8 @@
-# Diagnose the client machine's sync state in one pass.
+﻿# Diagnose the client machine's sync state in one pass.
 #
 # Run through `remote.py runfile`. Reads only; changes nothing.
 
-$d = 'E:\SteamLibrary\steamapps\common\F1 Manager 2024\F1Manager24\Binaries\Win64'
+$d = if ($env:COOP_CLIENT_GAME) { Join-Path $env:COOP_CLIENT_GAME 'F1Manager24\Binaries\Win64' } else { 'C:\Program Files (x86)\Steam\steamapps\common\F1 Manager 2024\F1Manager24\Binaries\Win64' }
 Set-Location $d
 
 Write-Output '=== processes ==='
