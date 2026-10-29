@@ -1,0 +1,16 @@
+﻿# Pin the build directory so every shell agrees where the binaries are.
+#
+# Why this exists: this project used to build outside the tree, into a temporary directory, because a
+# Defender-style lock on the in-tree `target\debug\deps\coop_agent-*.exe` broke incremental builds. That
+# path was previously set per shell via CARGO_TARGET_DIR, which meant a *fresh* shell silently built
+# somewhere else - and the deploy step then shipped a stale binary while reporting "VERIFY: OK". It cost
+# two test cycles.
+#
+# The pin stays, but the path is now inside the repository so it works on any machine: a committed
+# absolute path into one person's temp directory is wrong everywhere else. `target/` is gitignored.
+#
+# If the lock problem returns, override it per shell instead of editing this file:
+#   set CARGO_TARGET_DIR=D:\some\other\dir
+# and keep tools/remote.py pointed at the same place (it honours COOP_TARGET_DIR).
+[build]
+target-dir = "target"
