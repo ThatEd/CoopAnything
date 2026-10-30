@@ -3855,10 +3855,11 @@
 - game: Mass Effect Legendary Edition
   year: 2021
   engine: Unreal Engine 3
-  project: MELE Co-Op (squadmate possession, LE3 first)
-  url: https://github.com/ThatEd/MELE-CoOp
+  project: ME3 Squad Co-op (fork; MELE offline tooling and design)
+  url: https://github.com/ThatEd/ME3SquadCoop
   other_urls:
   - https://github.com/MatrimAl/ME3SquadCoop
+  - https://github.com/ThatEd/MELE-CoOp
   kind: mod
   status: prototype
   coop_scope:
@@ -3891,7 +3892,12 @@
     append to the array. ME1 persists the actor graph (23 SaveObject classes in SFXGame.pcc, zero on
     ME2/ME3), so a client pawn in the host level is captured by the save. Possession and the
     conversation selection call are the only two things genuinely shared. Scope is 6,644 maps counted
-    structurally. Write-up in games/mass-effect-legendary-edition/.'
+    structurally. Development has moved to a fork of ME3SquadCoop, on branch
+    research/mele-offline-invariants off its dev/campaign-coop: the offline package reader plus
+    docs/CAMPAIGN-INVARIANTS.md, docs/OFFLINE-PACKAGE-READER.md and a nine-case test module,
+    with the reader byte-identical to the one in MELE-CoOp. No PR is open - that project asks
+    contributors not to publish until the owner does. MELE-CoOp keeps the cross-build design
+    record and the standalone bundle. Write-up in games/mass-effect-legendary-edition/.'
   sources:
   - https://github.com/ThatEd/MELE-CoOp
   - https://github.com/MatrimAl/ME3SquadCoop
