@@ -3868,18 +3868,30 @@
     world_state: 'no'
     items: unknown
   players: '2'
-  networking: unknown
+  networking: lan
   open_source: yes
   last_activity: 2026-10
   qa: none
   notes: 'Steam appid 1328670, buildid 10352613, ME3 exe 2.0.0.48602, UE 3. Campaign co-op where the
     host keeps Shepard and the client takes a squadmate. The route is possession of an existing pawn, not
     a second LocalPlayer: CreatePlayer crashes in LocalPlayer registration on LE1 and LE2 across three
-    attempts with bSpawnActor both ways, and only LE3 tolerates it. Read-only UE3 inspection, an offline
-    .pcc container reader and the offset discovery are done, and 97 offline tests pass, but no phase has
-    run against a running game - the game-side adapter behind the RPC bridge is the next piece of work.
-    Builds on ME3SquadCoop rather than starting over; treat the two as one line of work when reading
-    either. Write-up in games/mass-effect-legendary-edition/.'
+    attempts with bSpawnActor both ways, and only LE3 tolerates it. Every value below was read offline
+    from the shipped .pcc packages; no phase has run against a running game, and the harness a running
+    game needs lives in the sibling ME3SquadCoop and LEMP projects rather than here. Several of these
+    measurements contradicted the plan: the UE3 replication model survived the cut (Actor
+    Role/RemoteRole, 117/113/113 net-named PlayerController functions, the full listen-server admin
+    surface on GameInfo) but the net driver is a script class in zero of 12,704 packages, and LEMP binds
+    a working listen server with open <map>?listen on UDP 3659, a port in no config file. There is no
+    seamless travel: bUseSeamlessTravel is declared on Engine.GameInfo in all three builds and set by 0
+    of 6,685 exactly-closing CDOs, so a level change destroys the client pawn and
+    GetSeamlessTravelActorList is never called. ME3 clamps MaxPlayersAllowed to 1 on its campaign class
+    while the base allows 32; ME1/ME2 set neither. The squad roster is TArray<MemberData> on ME1/ME2 and
+    TArray<Object> on ME3 with MemberData absent there, and the campaign recruits through a Bio2DA table
+    on ME2/ME3 but not ME1, so the safe route is to make the campaign recruit the client rather than
+    append to the array. ME1 persists the actor graph (23 SaveObject classes in SFXGame.pcc, zero on
+    ME2/ME3), so a client pawn in the host level is captured by the save. Possession and the
+    conversation selection call are the only two things genuinely shared. Scope is 6,644 maps counted
+    structurally. Write-up in games/mass-effect-legendary-edition/.'
   sources:
   - https://github.com/ThatEd/MELE-CoOp
   - https://github.com/MatrimAl/ME3SquadCoop
