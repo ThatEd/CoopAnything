@@ -3855,29 +3855,37 @@
 - game: Mass Effect Legendary Edition
   year: 2021
   engine: Unreal Engine 3
-  project: (none found)
-  url: ''
-  other_urls: []
-  kind: gap
-  status: none
+  project: MELE Co-Op (squadmate possession, LE3 first)
+  url: https://github.com/ThatEd/MELE-CoOp
+  other_urls:
+  - https://github.com/MatrimAl/ME3SquadCoop
+  kind: mod
+  status: prototype
   coop_scope:
+    players_visible: partial
     story: unknown
     enemies: unknown
-    world_state: unknown
+    world_state: 'no'
     items: unknown
-  players: unknown
+  players: '2'
   networking: unknown
-  open_source: unknown
-  last_activity: unknown
+  open_source: yes
+  last_activity: 2026-10
   qa: none
-  notes: No campaign co-op released; Nexus forum threads only request it, and an ME3 proof-of-concept co-op mission
-    mod was abandoned by its author. Reddit could not be searched with my tool.
+  notes: 'Steam appid 1328670, buildid 10352613, ME3 exe 2.0.0.48602, UE 3. Campaign co-op where the
+    host keeps Shepard and the client takes a squadmate. The route is possession of an existing pawn, not
+    a second LocalPlayer: CreatePlayer crashes in LocalPlayer registration on LE1 and LE2 across three
+    attempts with bSpawnActor both ways, and only LE3 tolerates it. Read-only UE3 inspection, an offline
+    .pcc container reader and the offset discovery are done, and 97 offline tests pass, but no phase has
+    run against a running game - the game-side adapter behind the RPC bridge is the next piece of work.
+    Builds on ME3SquadCoop rather than starting over; treat the two as one line of work when reading
+    either. Write-up in games/mass-effect-legendary-edition/.'
   sources:
-  - https://forums.nexusmods.com/topic/13533345-mass-effect-together/
-  - https://www.nexusmods.com/masseffect3/mods/723
-  checked: 2026-10-16
-  searched:
-  - search GitHub, Nexus, ModDB and Steam via web search, 2026-10-16
+  - https://github.com/ThatEd/MELE-CoOp
+  - https://github.com/MatrimAl/ME3SquadCoop
+  - https://github.com/cranebeaker/coop-anything/issues/258
+  checked: '2026-10-30'
+  made_with_coop_anything: true
 - game: DOOM Eternal
   year: 2020
   engine: id Tech 7
@@ -8939,3 +8947,35 @@
   sources:
   - https://github.com/vaiserYT/DeadCellsMultiplayerMod
   checked: '2026-10-23'
+- game: City Game Studio
+  year: 2021
+  engine: Godot 2.1.7
+  project: City Game Studio Multiplayer
+  url: https://github.com/ThatEd/City-Game-Studio-Multiplayer
+  other_urls: []
+  kind: mod
+  status: prototype
+  coop_scope:
+    players_visible: yes
+    story: 'no'
+    enemies: 'no'
+    world_state: yes
+    items: partial
+  players: '2'
+  networking: hosted-relay
+  open_source: yes
+  last_activity: 2026-10
+  qa: automated
+  notes: 'Steam appid 726840, build 25723493, tested on game v1.28.1, custom Godot 2.1.7 with no TCPServer
+    and no NetworkedMultiplayerENet, so a small off-game Python relay is the hub and the game only dials
+    out. Competitive co-op, not shared control: the host owns the world and a second player runs their own
+    competing studio inside it, with 28 company models kept per-machine. Two real instances boot the same
+    world and each sees the other as a rival by company name with its own money, offices and released
+    games; disconnects save and return the client to the menu. 25 in-game assertions per machine and 12
+    relay cases. Not done: split screen, three or more players, rejoining without a world transfer, Steam
+    invites. Write-up in games/city-game-studio/.'
+  sources:
+  - https://github.com/ThatEd/City-Game-Studio-Multiplayer
+  - https://github.com/cranebeaker/coop-anything/issues/259
+  checked: '2026-10-30'
+  made_with_coop_anything: true
